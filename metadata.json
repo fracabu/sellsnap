@@ -1,0 +1,7 @@
+{
+  "name": "SellSnap",
+  "description": "Con una foto ottieni una valutazione, una descrizione professionale e tutte le info formattate per le piattaforme di vendita. Il tuo perito AI istantaneo.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
