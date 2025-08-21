@@ -188,7 +188,7 @@ const App: React.FC = () => {
       
       <Header />
       {/* Hero Section */}
-      <section id="hero" className="relative flex items-center justify-center overflow-hidden" style={{ minHeight: 'calc(100vh - 5rem)' }}>
+      <section id="hero" className="relative flex items-center justify-center overflow-hidden" style={{ minHeight: 'calc(100vh - 5rem)', scrollMarginTop: '5rem' }}>
         {/* Hero Background Image */}
         <div className="absolute inset-0 opacity-30"
              style={{
@@ -227,7 +227,7 @@ const App: React.FC = () => {
       </section>
 
       {/* Come Funziona Section */}
-      <section id="come-funziona" className="bg-base-200/50 flex items-center justify-center" style={{ height: 'calc(100vh - 5rem)' }}>
+      <section id="come-funziona" className="bg-base-200/50 flex items-center justify-center py-8" style={{ minHeight: 'calc(100vh - 5rem)', scrollMarginTop: '5rem' }}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto justify-items-center">
@@ -284,7 +284,7 @@ const App: React.FC = () => {
       </section>
 
       {/* Upload Section */}
-      <section id="carica-foto" className="flex items-center justify-center py-8" style={{ minHeight: 'calc(100vh - 5rem)' }}>
+      <section id="carica-foto" className="flex items-center justify-center py-8" style={{ minHeight: 'calc(100vh - 5rem)', scrollMarginTop: '5rem' }}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="max-w-7xl mx-auto">

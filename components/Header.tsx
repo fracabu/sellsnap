@@ -8,6 +8,21 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerHeight = 100; // Increased offset for better visibility (was 80)
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 bg-base-200/90 backdrop-blur-md border-b border-base-300 ${className}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -25,15 +40,15 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           
           {/* Navigation Menu */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#hero" className="text-text-primary hover:text-orange-500 transition-colors duration-200 font-medium">
+            <button onClick={() => scrollToSection('hero')} className="text-text-primary hover:text-orange-500 transition-colors duration-200 font-medium">
               Home
-            </a>
-            <a href="#come-funziona" className="text-text-primary hover:text-orange-500 transition-colors duration-200 font-medium">
+            </button>
+            <button onClick={() => scrollToSection('come-funziona')} className="text-text-primary hover:text-orange-500 transition-colors duration-200 font-medium">
               Come Funziona
-            </a>
-            <a href="#carica-foto" className="text-text-primary hover:text-orange-500 transition-colors duration-200 font-medium">
+            </button>
+            <button onClick={() => scrollToSection('carica-foto')} className="text-text-primary hover:text-orange-500 transition-colors duration-200 font-medium">
               Carica Foto
-            </a>
+            </button>
           </nav>
           
           {/* Mobile Menu Button */}
@@ -57,27 +72,24 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-base-300 bg-base-200/95 backdrop-blur-md">
             <nav className="px-4 py-4 space-y-4">
-              <a 
-                href="#hero" 
-                className="block text-text-primary hover:text-orange-500 transition-colors font-medium"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <button 
+                onClick={() => scrollToSection('hero')}
+                className="block text-text-primary hover:text-orange-500 transition-colors font-medium text-left w-full"
               >
                 Home
-              </a>
-              <a 
-                href="#come-funziona" 
-                className="block text-text-primary hover:text-orange-500 transition-colors font-medium"
-                onClick={() => setIsMobileMenuOpen(false)}
+              </button>
+              <button 
+                onClick={() => scrollToSection('come-funziona')}
+                className="block text-text-primary hover:text-orange-500 transition-colors font-medium text-left w-full"
               >
                 Come Funziona
-              </a>
-              <a 
-                href="#carica-foto" 
-                className="block text-text-primary hover:text-orange-500 transition-colors font-medium"
-                onClick={() => setIsMobileMenuOpen(false)}
+              </button>
+              <button 
+                onClick={() => scrollToSection('carica-foto')}
+                className="block text-text-primary hover:text-orange-500 transition-colors font-medium text-left w-full"
               >
                 Carica Foto
-              </a>
+              </button>
             </nav>
           </div>
         )}
