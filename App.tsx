@@ -316,9 +316,9 @@ const App: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className={`w-full h-48 max-h-48 border-2 border-dashed rounded-lg flex items-center justify-center bg-base-100 relative overflow-hidden mb-4 ${canUpload ? 'border-base-300 hover:border-purple-300 transition-colors' : 'border-gray-300 cursor-not-allowed'}`}>
-                    {currentImages.length > 0 ? (
-                      <div className="w-full h-full flex gap-2 p-2">
+                  {currentImages.length > 0 ? (
+                    <div className="w-full h-48 max-h-48 border-2 border-dashed rounded-lg bg-base-100 overflow-hidden mb-4 border-base-300 p-2">
+                      <div className="w-full h-full flex gap-2">
                         {currentImages.slice(0, 3).map((imageUrl, index) => (
                           <div key={index} className="flex-1 h-full relative">
                             <img src={imageUrl} alt={`Oggetto ${index + 1}`} className="w-full h-full object-contain rounded" />
@@ -330,30 +330,67 @@ const App: React.FC = () => {
                           </div>
                         ))}
                       </div>
-                    ) : (
-                      <div className="text-center text-text-secondary p-4">
-                        <UploadIcon className={`w-12 h-12 mx-auto mb-4 ${canUpload ? 'text-purple-500' : 'text-gray-400'}`} />
-                        <h4 className="text-base font-semibold mb-2">
-                          {canUpload ? 'Trascina le immagini qui' : 'Configura prima l\'API key'}
-                        </h4>
-                        <p className="text-sm mb-4">
-                          {canUpload ? 'oppure clicca per selezionare dal tuo dispositivo' : 'Inserisci la tua chiave API nella colonna di sinistra'}
-                        </p>
-                        {canUpload && (
+                    </div>
+                  ) : (
+                    <div className="text-center mb-4">
+                      <UploadIcon className={`w-12 h-12 mx-auto mb-4 ${canUpload ? 'text-purple-500' : 'text-gray-400'}`} />
+                      <h4 className="text-base font-semibold mb-2">
+                        {canUpload ? 'Carica le foto del tuo oggetto' : 'Configura prima l\'API key'}
+                      </h4>
+                      <p className="text-sm mb-4 text-text-secondary">
+                        {canUpload ? 'Scegli come vuoi aggiungere le immagini' : 'Inserisci la tua chiave API nella colonna di sinistra'}
+                      </p>
+                      {canUpload && (
+                        <>
+                          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+                            <PushButton
+                              onClick={() => document.getElementById('camera-input')?.click()}
+                              variant="purple"
+                              className="flex items-center gap-2 px-4 py-3 text-sm font-medium"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              Scatta Foto
+                            </PushButton>
+                            <PushButton
+                              onClick={() => document.getElementById('gallery-input')?.click()}
+                              variant="orange"
+                              className="flex items-center gap-2 px-4 py-3 text-sm font-medium"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              Dalla Galleria
+                            </PushButton>
+                          </div>
                           <p className="text-xs text-text-secondary/70">Massimo 5 foto • JPG, PNG, WebP</p>
-                        )}
-                      </div>
-                    )}
-                    <input
-                      id="file-upload"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImageChange}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      disabled={processState === 'processing' || !canUpload}
-                    />
-                  </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Input nascosti per camera e galleria */}
+                  <input
+                    id="camera-input"
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    multiple
+                    onChange={handleImageChange}
+                    className="hidden"
+                    disabled={processState === 'processing' || !canUpload}
+                  />
+                  <input
+                    id="gallery-input"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    className="hidden"
+                    disabled={processState === 'processing' || !canUpload}
+                  />
                   
                   {/* Progress Bar - Inside the panel */}
                   {processState === 'processing' && (
