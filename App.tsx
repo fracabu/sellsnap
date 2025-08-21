@@ -45,6 +45,20 @@ const App: React.FC = () => {
     setCanUpload(hasApiKey());
   }, []);
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerHeight = 100; // Same offset as Header component
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const handleApiKeySubmit = async (apiKey: string) => {
     setIsValidatingKey(true);
     try {
@@ -212,10 +226,10 @@ const App: React.FC = () => {
             </p>
           </AnimatedSection>
           
-          <AnimatedSection animation="fadeUp" delay={600}>
+          <AnimatedSection animation="fadeUp" delay={600} options={{ rootMargin: '200px 0px 0px 0px', threshold: 0 }}>
             <div className="flex justify-center px-4">
               <PushButton 
-                onClick={() => document.getElementById('come-funziona')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => scrollToSection('come-funziona')}
                 variant="purple"
                 className="text-lg font-semibold px-8 py-4"
               >
@@ -272,7 +286,7 @@ const App: React.FC = () => {
           <AnimatedSection animation="fadeUp" delay={800}>
             <div className="text-center mt-12">
               <PushButton 
-                onClick={() => document.getElementById('carica-foto')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => scrollToSection('carica-foto')}
                 variant="purple"
                 className="text-lg font-semibold px-8 py-4"
               >
