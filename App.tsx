@@ -188,7 +188,7 @@ const App: React.FC = () => {
       
       <Header />
       {/* Hero Section */}
-      <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section id="hero" className="relative flex items-center justify-center overflow-hidden" style={{ minHeight: 'calc(100vh - 5rem)' }}>
         {/* Hero Background Image */}
         <div className="absolute inset-0 opacity-30"
              style={{
@@ -199,7 +199,7 @@ const App: React.FC = () => {
         </div>
         
         {/* Hero Content */}
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center" style={{paddingTop: '100px'}}>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimatedSection animation="fadeUp" delay={200}>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-300 mb-6 leading-tight">
               Scatta, Valuta, Vendi.<br className="sm:hidden" /> In un attimo.
@@ -227,8 +227,8 @@ const App: React.FC = () => {
       </section>
 
       {/* Come Funziona Section */}
-      <section id="come-funziona" className="h-screen bg-base-200/50 flex items-center justify-center">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8" style={{paddingTop: '100px'}}>
+      <section id="come-funziona" className="bg-base-200/50 flex items-center justify-center" style={{ height: 'calc(100vh - 5rem)' }}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto justify-items-center">
             <AnimatedSection animation="fadeUp" delay={200}>
@@ -284,8 +284,8 @@ const App: React.FC = () => {
       </section>
 
       {/* Upload Section */}
-      <section id="carica-foto" className="min-h-screen flex items-center justify-center py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8" style={{paddingTop: '60px'}}>
+      <section id="carica-foto" className="flex items-center justify-center py-8" style={{ minHeight: 'calc(100vh - 5rem)' }}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
