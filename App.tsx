@@ -348,7 +348,6 @@ const App: React.FC = () => {
                       id="file-upload"
                       type="file"
                       accept="image/*"
-                      capture="environment"
                       multiple
                       onChange={handleImageChange}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"

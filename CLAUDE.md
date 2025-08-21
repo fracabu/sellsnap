@@ -18,17 +18,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 SellSnap is a React/TypeScript application that provides AI-powered appraisals for second-hand items using Google's Gemini API.
 
 ### Core Structure
-- **App.tsx** - Main application component with state management, image processing, and UI sections
+- **App.tsx** - Main application component with state management, image processing, and UI sections (hero, upload, results)
 - **services/geminiService.ts** - Handles Gemini AI API calls for appraisals and follow-up questions
 - **types.ts** - Comprehensive TypeScript interfaces for the entire appraisal system
-- **components/** - UI components (ChatInterface, ResultCard, Loader, Header, icons)
+- **components/** - UI components (ChatInterface, ResultCard, Loader, Header, Footer, ApiKeyModal, AnimatedSection, PushButton, icons)
+- **hooks/** - Custom React hooks (useScrollAnimation.ts)
 
 ### Key Features
-1. **Image Upload & Analysis** - Users upload photos of items for AI analysis with base64 conversion
+1. **Image Upload & Analysis** - Users upload photos (up to 5) of items for AI analysis with base64 conversion
 2. **Universal Appraisal System** - Structured JSON output covering multiple item categories (antiques, electronics, fashion, art, etc.)
 3. **Chat Interface** - Follow-up Q&A functionality for each appraisal with conversation history
 4. **Platform Integration** - Pre-formatted data for Vinted, eBay, and Subito marketplaces
 5. **Multi-language Interface** - Italian UI with comprehensive appraisal categories
+6. **API Key Management** - localStorage-based API key storage with validation modal
 
 ### AI Integration Architecture
 - Uses Google Gemini 2.5 Flash model (`@google/genai` package) with web search capabilities
@@ -46,9 +48,9 @@ SellSnap is a React/TypeScript application that provides AI-powered appraisals f
 
 ### State Management
 - React hooks-based state management in App.tsx
-- Main states: `results`, `currentImageUrl`, `error`, `processState`
+- Main states: `results`, `currentImages` (array), `error`, `processState`, `showApiKeyModal`, `canUpload`
 - Process states: `idle`, `processing`, `error`
-- Chat state embedded in each `AppraisalResult` object
+- Chat state embedded in each `AppraisalResult` object with `history` and `isLoading`
 
 ### Configuration
 - Vite build system with environment variable injection (`GEMINI_API_KEY`)
@@ -57,7 +59,15 @@ SellSnap is a React/TypeScript application that provides AI-powered appraisals f
 - No test framework currently configured
 
 ### Error Handling
-- JSON parsing fallback for markdown-wrapped responses
+- JSON parsing fallback for markdown-wrapped responses in geminiService.ts
 - Network error handling with user-friendly Italian messages
-- API key validation at service initialization
-- Image processing error handling
+- API key validation at service initialization with `validateApiKey()` function
+- Image processing error handling with FileReader API
+- Anti-hallucination filtering validates URLs against grounding metadata to prevent fake comparables
+
+### UI Architecture
+- Landing page with hero section, "Come Funziona" section, and upload interface
+- Responsive design with grid layouts and animated sections
+- API Key form in left column, upload interface in right column
+- Results displayed as cards with chat interface for follow-up questions
+- Custom button components (PushButton) and loading states
