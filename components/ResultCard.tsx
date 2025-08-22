@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import type { AppraisalResult, PlatformFields, EbayPlatform, SubitoPlatform, VintedPlatform } from '../types';
+import type { AuthUser } from '../src/services/authService';
 import { ShareIcon, WarningIcon } from './icons';
 import { ChatInterface } from './ChatInterface';
+import { SaveToInventoryButton } from '../src/components/SaveToInventoryButton';
 
 interface ResultCardProps {
     result: AppraisalResult;
     onSendMessage: (resultId: string, message: string) => void;
+    user: AuthUser | null;
 }
 
 const DetailItem: React.FC<{ label: string, value: React.ReactNode }> = ({ label, value }) => {
@@ -55,7 +58,7 @@ const PlatformDetails: React.FC<{ data: VintedPlatform | EbayPlatform | SubitoPl
 
 type TabType = 'overview' | 'details' | 'selling' | 'analysis';
 
-export const ResultCard: React.FC<ResultCardProps> = ({ result, onSendMessage }) => {
+export const ResultCard: React.FC<ResultCardProps> = ({ result, onSendMessage, user }) => {
     const { appraisalData, imageUrl } = result;
     const [activeTab, setActiveTab] = useState<keyof PlatformFields>('vinted');
     const [activeMainTab, setActiveMainTab] = useState<TabType>('overview');
@@ -302,6 +305,13 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result, onSendMessage })
                             <ShareIcon className="w-4 h-4" />
                             Condividi
                         </button>
+                        {user && (
+                            <SaveToInventoryButton 
+                                appraisal={result} 
+                                userId={user.uid}
+                                onSaved={() => console.log('Perizia salvata nell\'inventario!')}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

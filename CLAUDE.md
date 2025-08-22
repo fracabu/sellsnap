@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Environment Setup
 - Set `GEMINI_API_KEY` in `.env.local` with your Gemini API key
 - Run `npm install` to install dependencies
+- Firebase configuration is already set up in the codebase
 
 ### Common Commands
 - `npm run dev` - Start development server (Vite dev server on port 5173)
@@ -21,7 +22,10 @@ SellSnap is a React/TypeScript application that provides AI-powered appraisals f
 - **App.tsx** - Main application component with state management, image processing, and UI sections (hero, upload, results)
 - **services/geminiService.ts** - Handles Gemini AI API calls for appraisals and follow-up questions
 - **types.ts** - Comprehensive TypeScript interfaces for the entire appraisal system
-- **components/** - UI components (ChatInterface, ResultCard, Loader, Header, Footer, ApiKeyModal, AnimatedSection, PushButton, icons)
+- **components/** - UI components (ChatInterface, ResultCard, Loader, Header, Footer, ApiKeyModal, ApiKeyForm, AnimatedSection, PushButton, icons)
+- **src/components/** - Additional components (AuthModal, InventoryModal, SaveToInventoryButton)
+- **src/services/** - Business logic services (authService.ts for Firebase Auth, inventoryService.ts for Firestore operations)
+- **src/config/** - Configuration files (firebase.ts for Firebase setup)
 - **hooks/** - Custom React hooks (useScrollAnimation.ts)
 
 ### Key Features
@@ -31,6 +35,8 @@ SellSnap is a React/TypeScript application that provides AI-powered appraisals f
 4. **Platform Integration** - Pre-formatted data for Vinted, eBay, and Subito marketplaces
 5. **Multi-language Interface** - Italian UI with comprehensive appraisal categories
 6. **API Key Management** - localStorage-based API key storage with validation modal
+7. **User Authentication** - Firebase Authentication with email/password registration and login
+8. **Personal Inventory** - Users can save appraisals to a personal inventory stored in Firestore
 
 ### AI Integration Architecture
 - Uses Google Gemini 2.5 Flash model (`@google/genai` package) with web search capabilities
@@ -48,14 +54,16 @@ SellSnap is a React/TypeScript application that provides AI-powered appraisals f
 
 ### State Management
 - React hooks-based state management in App.tsx
-- Main states: `results`, `currentImages` (array), `error`, `processState`, `showApiKeyModal`, `canUpload`
+- Main states: `results`, `currentImages` (array), `error`, `processState`, `showApiKeyModal`, `canUpload`, `user`, `showAuthModal`, `showInventoryModal`
 - Process states: `idle`, `processing`, `error`
 - Chat state embedded in each `AppraisalResult` object with `history` and `isLoading`
+- Authentication state managed via Firebase `onAuthStateChanged` listener
 
 ### Configuration
 - Vite build system with environment variable injection (`GEMINI_API_KEY`)
 - Path aliases (`@/*` maps to root directory)
 - TypeScript with JSX support and bundler module resolution
+- Firebase configuration with predefined project settings
 - No test framework currently configured
 
 ### Error Handling
@@ -64,6 +72,7 @@ SellSnap is a React/TypeScript application that provides AI-powered appraisals f
 - API key validation at service initialization with `validateApiKey()` function
 - Image processing error handling with FileReader API
 - Anti-hallucination filtering validates URLs against grounding metadata to prevent fake comparables
+- Firebase authentication error handling with localized Italian error messages
 
 ### UI Architecture
 - Landing page with hero section, "Come Funziona" section, and upload interface
