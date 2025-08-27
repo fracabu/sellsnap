@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PushButton } from './PushButton';
+import { ThemeToggle } from '../src/components/ThemeToggle';
 
 interface HeaderProps {
   className?: string;
@@ -24,7 +25,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-base-200/90 backdrop-blur-md border-b border-base-300 ${className}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 ${className}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -39,23 +40,25 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           </div>
           
           {/* Navigation Menu */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <button onClick={() => scrollToSection('hero')} className="text-text-primary hover:text-orange-500 transition-colors duration-200 font-medium">
+          <nav className="hidden md:flex items-center space-x-6">
+            <button onClick={() => scrollToSection('hero')} className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors duration-200 font-medium">
               Home
             </button>
-            <button onClick={() => scrollToSection('come-funziona')} className="text-text-primary hover:text-orange-500 transition-colors duration-200 font-medium">
+            <button onClick={() => scrollToSection('come-funziona')} className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors duration-200 font-medium">
               Come Funziona
             </button>
-            <button onClick={() => scrollToSection('carica-foto')} className="text-text-primary hover:text-orange-500 transition-colors duration-200 font-medium">
+            <button onClick={() => scrollToSection('carica-foto')} className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors duration-200 font-medium">
               Carica Foto
             </button>
+            <ThemeToggle className="ml-2" />
           </nav>
           
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          {/* Mobile Menu Button & Theme Toggle */}
+          <div className="md:hidden flex items-center space-x-3">
+            <ThemeToggle />
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-text-primary hover:text-orange-500 transition-colors"
+              className="text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMobileMenuOpen ? (
@@ -70,23 +73,23 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-base-300 bg-base-200/95 backdrop-blur-md">
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md">
             <nav className="px-4 py-4 space-y-4">
               <button 
                 onClick={() => scrollToSection('hero')}
-                className="block text-text-primary hover:text-orange-500 transition-colors font-medium text-left w-full"
+                className="block text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors font-medium text-left w-full"
               >
                 Home
               </button>
               <button 
                 onClick={() => scrollToSection('come-funziona')}
-                className="block text-text-primary hover:text-orange-500 transition-colors font-medium text-left w-full"
+                className="block text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors font-medium text-left w-full"
               >
                 Come Funziona
               </button>
               <button 
                 onClick={() => scrollToSection('carica-foto')}
-                className="block text-text-primary hover:text-orange-500 transition-colors font-medium text-left w-full"
+                className="block text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors font-medium text-left w-full"
               >
                 Carica Foto
               </button>
