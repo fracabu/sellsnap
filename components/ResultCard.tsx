@@ -309,6 +309,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result, onSendMessage, u
                             <SaveToInventoryButton 
                                 appraisal={result} 
                                 userId={user.uid}
+                                imageFiles={result.imageFiles}
                                 onSaved={() => console.log('Perizia salvata nell\'inventario!')}
                             />
                         )}

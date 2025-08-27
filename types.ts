@@ -22,12 +22,14 @@ export interface AppraisalResult {
   id: string;
   imageUrl: string;
   images?: string[]; // Array di tutte le immagini
+  imageFiles?: File[]; // File originali per calcolo hash
   appraisalData: UniversalAppraisal;
   sources: Source[];
   chat?: {
     history: ChatMessage[];
     isLoading: boolean;
   };
+  isDuplicateUpdate?: boolean; // Flag per aggiornamenti di duplicati
 }
 
 export interface UniversalAppraisal {

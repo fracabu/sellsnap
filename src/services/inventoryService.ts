@@ -30,11 +30,85 @@ export interface InventoryItem {
   vintedCategory?: string;
   subitoCategory?: string;
   size?: string;
+  imageHash: string;
+  lastAppraisalAt: Timestamp;
+  priceHistory?: Array<{
+    price: number;
+    date: Timestamp;
+  }>;
 }
+
+export const checkDuplicateByImageHash = async (
+  userId: string,
+  imageHash: string
+): Promise<InventoryItem | null> => {
+  try {
+    const inventoryRef = collection(db, 'inventory');
+    const q = query(
+      inventoryRef,
+      where('userId', '==', userId),
+      where('imageHash', '==', imageHash)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      return null;
+    }
+    
+    const doc = querySnapshot.docs[0];
+    return {
+      id: doc.id,
+      ...doc.data()
+    } as InventoryItem;
+  } catch (error) {
+    console.error('Errore nel controllo duplicati:', error);
+    return null;
+  }
+};
+
+export const updateExistingAppraisal = async (
+  itemId: string,
+  newPrice: number,
+  appraisalData: AppraisalResult,
+  notes?: string
+): Promise<void> => {
+  try {
+    const itemRef = doc(db, 'inventory', itemId);
+    const currentItem = await getDocs(query(collection(db, 'inventory'), where('__name__', '==', itemId)));
+    
+    if (!currentItem.empty) {
+      const currentData = currentItem.docs[0].data() as InventoryItem;
+      const priceHistory = currentData.priceHistory || [];
+      
+      // Aggiungi il prezzo precedente alla cronologia se diverso
+      if (currentData.priceSuggested !== newPrice) {
+        priceHistory.push({
+          price: currentData.priceSuggested,
+          date: currentData.lastAppraisalAt
+        });
+      }
+      
+      await updateDoc(itemRef, {
+        priceSuggested: newPrice,
+        lastAppraisalAt: serverTimestamp(),
+        priceHistory,
+        title: appraisalData.appraisalData?.title || currentData.title,
+        condition: appraisalData.appraisalData?.condition || currentData.condition,
+        vintedDescription: appraisalData.appraisalData?.platform_fields?.vinted?.description || currentData.vintedDescription,
+        subitoDescription: appraisalData.appraisalData?.platform_fields?.subito?.description || currentData.subitoDescription,
+        notes: notes || currentData.notes
+      });
+    }
+  } catch (error) {
+    console.error('Errore nell\'aggiornare la valutazione esistente:', error);
+    throw new Error('Impossibile aggiornare la valutazione esistente');
+  }
+};
 
 export const saveAppraisalToInventory = async (
   userId: string, 
   appraisalData: AppraisalResult,
+  imageHash: string,
   notes?: string
 ): Promise<string> => {
   try {
@@ -55,7 +129,10 @@ export const saveAppraisalToInventory = async (
       subitoDescription: appraisalData.appraisalData?.platform_fields?.subito?.description || '',
       vintedCategory: appraisalData.appraisalData?.platform_fields?.vinted?.category || '',
       subitoCategory: appraisalData.appraisalData?.platform_fields?.subito?.category || '',
+      imageHash,
       savedAt: serverTimestamp(),
+      lastAppraisalAt: serverTimestamp(),
+      priceHistory: [],
       notes: notes || null
     });
     return docRef.id;

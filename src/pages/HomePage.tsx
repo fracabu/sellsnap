@@ -2,6 +2,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUniversalAppraisal, getFollowUpAnswer, hasApiKey, setApiKey, validateApiKey } from '../../services/geminiService';
 import type { AppraisalResult, ChatMessage } from '../../types';
+import { calculateMultipleImagesHash } from '../utils/imageHash';
+import { checkDuplicateByImageHash, saveAppraisalToInventory, updateExistingAppraisal } from '../services/inventoryService';
 import { Loader } from '../../components/Loader';
 import { UploadIcon, ResetIcon } from '../../components/icons';
 import { ResultCard } from '../../components/ResultCard';
@@ -43,6 +45,12 @@ export const HomePage: React.FC = () => {
   const [isValidatingKey, setIsValidatingKey] = useState(false);
   const [canUpload, setCanUpload] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [currentFiles, setCurrentFiles] = useState<File[]>([]);
+  const [duplicateInfo, setDuplicateInfo] = useState<{
+    isDuplicate: boolean;
+    existingItem?: any;
+    imageHash?: string;
+  }>({ isDuplicate: false });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -100,12 +108,23 @@ export const HomePage: React.FC = () => {
   const handleReset = useCallback(() => {
     setResults([]);
     setCurrentImages([]);
+    setCurrentFiles([]);
     setError('');
     setProcessState('idle');
-    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
+    setDuplicateInfo({ isDuplicate: false });
+    
+    // Pulisci tutti gli input file
+    const fileInputs = [
+      document.getElementById('file-upload'),
+      document.getElementById('camera-input'),
+      document.getElementById('gallery-input')
+    ] as HTMLInputElement[];
+    
+    fileInputs.forEach(input => {
+      if (input) {
+        input.value = '';
+      }
+    });
   }, []);
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,23 +132,45 @@ export const HomePage: React.FC = () => {
     if (files && files.length > 0) {
       setError('');
       setProcessState('idle');
+      setDuplicateInfo({ isDuplicate: false });
+
+      const selectedFiles = Array.from(files).slice(0, 5);
+      setCurrentFiles(selectedFiles);
 
       const imageUrls: string[] = [];
-      for (let i = 0; i < Math.min(files.length, 5); i++) {
-        const dataUrl = await fileToDataUrl(files[i]);
+      for (const file of selectedFiles) {
+        const dataUrl = await fileToDataUrl(file);
         imageUrls.push(dataUrl);
       }
       setCurrentImages(imageUrls);
+
+      // Controlla per duplicati se l'utente è loggato
+      if (user) {
+        try {
+          const imageHash = await calculateMultipleImagesHash(selectedFiles);
+          const existingItem = await checkDuplicateByImageHash(user.uid, imageHash);
+          
+          if (existingItem) {
+            setDuplicateInfo({
+              isDuplicate: true,
+              existingItem,
+              imageHash
+            });
+          }
+        } catch (error) {
+          console.warn('Errore nel controllo duplicati:', error);
+        }
+      }
     }
   };
 
   const handleStartAnalysis = async () => {
     if (currentImages.length > 0) {
-      await processImages(currentImages);
+      await processImages(currentImages, currentFiles);
     }
   };
 
-  const processImages = async (imageUrls: string[]) => {
+  const processImages = async (imageUrls: string[], files: File[]) => {
     try {
       setProcessState('processing');
       
@@ -139,13 +180,53 @@ export const HomePage: React.FC = () => {
         return;
       }
 
+      // Calcola hash delle immagini
+      const imageHash = await calculateMultipleImagesHash(files);
+      
+      // Se è un duplicato e l'utente è loggato, mostra opzioni all'utente
+      if (duplicateInfo.isDuplicate && duplicateInfo.existingItem && user) {
+        // Per i duplicati, forza sempre una nuova valutazione per aggiornare i prezzi
+        const imageParts = imageUrls.map(url => dataUrlToGenerativePart(url));
+        const { appraisalData, sources, fromCache } = await getUniversalAppraisal(imageParts); // Rimuovi imageHash per forzare nuova chiamata
+
+        // Aggiorna prezzo nell'inventario se diverso
+        if (appraisalData.pricing?.list_price_suggested !== duplicateInfo.existingItem.priceSuggested) {
+          await updateExistingAppraisal(
+            duplicateInfo.existingItem.id!,
+            appraisalData.pricing?.list_price_suggested || 0,
+            { appraisalData, sources } as AppraisalResult
+          );
+        }
+
+        const result: AppraisalResult = {
+          id: new Date().toISOString() + Math.random(),
+          imageUrl: imageUrls[0],
+          images: imageUrls,
+          imageFiles: files,
+          appraisalData,
+          sources,
+          chat: { history: [], isLoading: false },
+          isDuplicateUpdate: true, // Flag per indicare che è un aggiornamento
+        };
+
+        setResults(prev => [result, ...prev]);
+        setProcessState('idle');
+        setCurrentImages([]);
+        setCurrentFiles([]);
+        setDuplicateInfo({ isDuplicate: false });
+        
+        return;
+      }
+
+      // Processo normale per nuove immagini
       const imageParts = imageUrls.map(url => dataUrlToGenerativePart(url));
-      const { appraisalData, sources } = await getUniversalAppraisal(imageParts);
+      const { appraisalData, sources, fromCache } = await getUniversalAppraisal(imageParts, imageHash);
 
       const newResult: AppraisalResult = {
         id: new Date().toISOString() + Math.random(),
         imageUrl: imageUrls[0],
         images: imageUrls,
+        imageFiles: files,
         appraisalData,
         sources,
         chat: { history: [], isLoading: false },
@@ -154,6 +235,7 @@ export const HomePage: React.FC = () => {
       
       setProcessState('idle');
       setCurrentImages([]);
+      setCurrentFiles([]);
 
     } catch (err) {
       console.error(err);
@@ -420,6 +502,31 @@ export const HomePage: React.FC = () => {
                           <p className="text-xs text-text-secondary/70">Massimo 5 foto • JPG, PNG, WebP</p>
                         </>
                       )}
+                    </div>
+                  )}
+
+                  {/* Avviso Duplicato */}
+                  {duplicateInfo.isDuplicate && duplicateInfo.existingItem && (
+                    <div className="mb-4 p-4 bg-orange-50 border-2 border-orange-200 rounded-lg">
+                      <div className="flex items-start">
+                        <svg className="w-5 h-5 text-orange-600 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        <div className="flex-1">
+                          <h4 className="text-orange-900 font-bold mb-1">Oggetto già valutato</h4>
+                          <p className="text-orange-800 text-sm mb-2">
+                            Questo oggetto è già presente nel tuo inventario:
+                          </p>
+                          <div className="bg-white border border-orange-200 rounded p-3 text-sm">
+                            <p className="text-gray-900"><strong>Titolo:</strong> {duplicateInfo.existingItem.title}</p>
+                            <p className="text-gray-900"><strong>Prezzo attuale:</strong> €{duplicateInfo.existingItem.priceSuggested}</p>
+                            <p className="text-gray-900"><strong>Salvato il:</strong> {duplicateInfo.existingItem.savedAt?.toDate?.()?.toLocaleDateString('it-IT') || 'Data non disponibile'}</p>
+                          </div>
+                          <p className="text-orange-800 text-sm mt-2">
+                            Procedendo con l'analisi aggiornerò il prezzo se necessario.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   )}
 

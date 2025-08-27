@@ -1,5 +1,11 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, Part } from "@google/genai";
 import type { Source, GenerativePart, UniversalAppraisal, ChatMessage, Comparable } from '../types';
+import { 
+  cacheAppraisal, 
+  getCachedAppraisal, 
+  cleanExpiredCache,
+  updateCachedPrice 
+} from './appraisalCache';
 
 const model = "gemini-2.5-flash";
 
@@ -46,7 +52,26 @@ export const validateApiKey = async (apiKey: string): Promise<boolean> => {
     }
 };
 
-export async function getUniversalAppraisal(imageParts: GenerativePart | GenerativePart[]): Promise<{ appraisalData: UniversalAppraisal; sources: Source[] }> {
+export async function getUniversalAppraisal(
+  imageParts: GenerativePart | GenerativePart[], 
+  imageHash?: string
+): Promise<{ appraisalData: UniversalAppraisal; sources: Source[]; fromCache: boolean }> {
+  
+  // Pulizia cache scadute all'avvio
+  cleanExpiredCache();
+  
+  // Controlla se abbiamo una valutazione in cache
+  if (imageHash) {
+    const cached = getCachedAppraisal(imageHash);
+    if (cached) {
+      console.log('Valutazione recuperata dalla cache per hash:', imageHash);
+      return {
+        appraisalData: cached.appraisalData,
+        sources: cached.sources,
+        fromCache: true
+      };
+    }
+  }
     const prompt = `Sei un perito multidisciplinare per il mercato dell’usato (inclusi antiquariato, modernariato, mobili, arte, elettronica, moda, strumenti musicali, libri/vinili, orologi/giollielli, utensili).
 Dalla/e foto fornite e da eventuale titolo/testo utente, genera solo un JSON valido secondo lo schema fornito. Niente testo extra o markdown.
 
@@ -140,8 +165,13 @@ Schema JSON da usare (non includere nel tuo output, solo per riferimento):
             appraisalData.pricing.comparables = appraisalData.pricing.comparables.filter(comp => validUrls.has(comp.url));
         }
 
+        // Salva nella cache se abbiamo l'hash
+        if (imageHash) {
+            cacheAppraisal(imageHash, appraisalData, sources);
+            console.log('Valutazione salvata nella cache per hash:', imageHash);
+        }
 
-        return { appraisalData, sources };
+        return { appraisalData, sources, fromCache: false };
 
     } catch (error) {
         console.error("Error generating universal appraisal:", error);

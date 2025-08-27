@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { AppraisalResult } from '../types';
-import { saveAppraisalToInventory } from '../services/inventoryService';
+import { saveAppraisalToInventory, checkDuplicateByImageHash } from '../services/inventoryService';
+import { calculateMultipleImagesHash } from '../utils/imageHash';
 
 interface SaveToInventoryButtonProps {
   appraisal: AppraisalResult;
   userId: string;
+  imageFiles?: File[];
   onSaved?: () => void;
 }
 
 export const SaveToInventoryButton: React.FC<SaveToInventoryButtonProps> = ({ 
   appraisal, 
   userId, 
+  imageFiles,
   onSaved 
 }) => {
   const [saving, setSaving] = useState(false);
@@ -21,7 +24,24 @@ export const SaveToInventoryButton: React.FC<SaveToInventoryButtonProps> = ({
   const handleSave = async () => {
     setSaving(true);
     try {
-      await saveAppraisalToInventory(userId, appraisal, notes);
+      // Se abbiamo i file delle immagini, calcola l'hash per evitare duplicati futuri
+      let imageHash = '';
+      if (imageFiles && imageFiles.length > 0) {
+        imageHash = await calculateMultipleImagesHash(imageFiles);
+        
+        // Controlla se l'oggetto è già salvato nell'inventario
+        const existingItem = await checkDuplicateByImageHash(userId, imageHash);
+        if (existingItem) {
+          alert(`Questo oggetto è già presente nel tuo inventario:\n"${existingItem.title}"\nSalvato il: ${existingItem.savedAt?.toDate?.()?.toLocaleDateString('it-IT') || 'Data non disponibile'}`);
+          setSaving(false);
+          return;
+        }
+      } else {
+        // Fallback: usa un hash semplice basato sull'ID della valutazione
+        imageHash = `fallback_${appraisal.id}`;
+      }
+      
+      await saveAppraisalToInventory(userId, appraisal, imageHash, notes);
       setSaved(true);
       setShowNotes(false);
       setNotes('');
