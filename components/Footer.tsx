@@ -4,9 +4,9 @@ export const Footer: React.FC = () => {
   return (
     <footer className="bg-base-200 border-t border-base-300">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="flex flex-col md:flex-row justify-evenly items-start gap-8">
           {/* Logo e descrizione */}
-          <div className="md:col-span-2">
+          <div className="max-w-sm">
             <div className="flex items-center gap-3 mb-4">
               <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -16,8 +16,8 @@ export const Footer: React.FC = () => {
                 SellSnap
               </h3>
             </div>
-            <p className="text-text-secondary max-w-md leading-relaxed">
-              Trasforma i tuoi oggetti in annunci perfetti con l'intelligenza artificiale di Gemini. 
+            <p className="text-text-secondary leading-relaxed">
+              Trasforma i tuoi oggetti in annunci perfetti con l'intelligenza artificiale di Gemini.
               Valutazione accurata e descrizioni ottimizzate per tutti i marketplace.
             </p>
           </div>
@@ -74,13 +74,32 @@ export const Footer: React.FC = () => {
 
         {/* Copyright e crediti */}
         <div className="mt-8 pt-8 border-t border-base-300">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-evenly items-center gap-6">
             <p className="text-text-secondary text-sm">
               © 2025 SellSnap. Tutti i diritti riservati.
             </p>
-            <p className="text-text-secondary text-sm mt-2 md:mt-0">
+
+            <p className="text-text-secondary text-sm">
               Powered by <span className="text-orange-500 font-medium">Gemini di Google</span>
             </p>
+
+            <div className="flex items-center gap-2 text-text-secondary text-sm">
+              <span>Sviluppato con</span>
+              <span className="text-red-500">❤️</span>
+              <span>da</span>
+              <a
+                href="https://www.codecraft.it"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-opacity hover:opacity-80"
+              >
+                <img
+                  src="/logo-code2.png"
+                  alt="CodeCraft"
+                  className="h-9 inline-block"
+                />
+              </a>
+            </div>
           </div>
         </div>
       </div>
