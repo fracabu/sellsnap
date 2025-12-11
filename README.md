@@ -116,3 +116,4 @@ Contributi benvenuti! Apri una issue per segnalare bug o proporre nuove funziona
 ## 📄 Licenza
 
 Questo progetto è sotto licenza MIT.
+
