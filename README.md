@@ -1,119 +1,107 @@
-# 📸 SellSnap
+<h1 align="center">SellSnap</h1>
+<h3 align="center">AI-Powered Second-Hand Appraisal</h3>
 
-**Perizie intelligenti per il mercato dell'usato**
+<p align="center">
+  <em>Instant valuations for used items with Gemini AI</em>
+</p>
 
-SellSnap è un'applicazione web che utilizza l'intelligenza artificiale per fornire perizie istantanee di oggetti di seconda mano. Scatta una foto, ottieni una valutazione professionale completa di descrizione, prezzo e campi pronti per le piattaforme di vendita.
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React" />
+  <img src="https://img.shields.io/badge/Gemini_AI-4285F4?style=flat-square&logo=google&logoColor=white" alt="Gemini" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+</p>
 
-## ✨ Caratteristiche
+<p align="center">
+  :gb: <a href="#english">English</a> | :it: <a href="#italiano">Italiano</a>
+</p>
 
-- **Analisi AI Multidisciplinare**: Perizie per antiquariato, modernariato, mobili, arte, elettronica, moda, strumenti musicali, libri, vinili, orologi, gioielli e utensili
-- **Valutazione Prezzo**: Stima di mercato con ricerca web e comparazioni
-- **Controlli Autenticità**: Rilevamento di potenziali contraffazioni e rischi legali
-- **Piattaforme Multiple**: Campi pre-compilati per Vinted, eBay e Subito
-- **Chat Interattiva**: Domande di approfondimento su ogni perizia
-- **Interface Responsive**: Ottimizzata per desktop e mobile
+---
 
-## 🚀 Avvio Rapido
+<a name="english"></a>
+## :gb: English
 
-### Prerequisiti
-- Node.js (versione 18+)
-- Chiave API di Google Gemini
+### Overview
 
-### Installazione
+A web application using AI to provide instant appraisals for second-hand items. Snap a photo, get a professional valuation with description, price, and ready-to-sell fields for Vinted, eBay, Subito.
 
-1. **Clona il repository**
-   ```bash
-   git clone <repository-url>
-   cd sellsnap
-   ```
+### Features
 
-2. **Installa le dipendenze**
-   ```bash
-   npm install
-   ```
+- **Multi-Category AI Analysis** - Antiques, furniture, electronics, fashion, music, watches, jewelry
+- **Price Estimation** - Market research and comparisons
+- **Authenticity Checks** - Counterfeit and legal risk detection
+- **Multi-Platform Fields** - Pre-filled for Vinted, eBay, Subito
+- **Interactive Chat** - Follow-up questions on appraisals
 
-3. **Configura l'API Key**
-   
-   Crea un file `.env.local` nella root del progetto:
-   ```bash
-   GEMINI_API_KEY=la_tua_chiave_api_gemini
-   ```
+### Categories
 
-4. **Avvia l'applicazione**
-   ```bash
-   npm run dev
-   ```
+Antiques, Furniture, Art, Electronics, Fashion, Musical Instruments, Books, Vinyl, Watches, Jewelry, Tools
 
-L'app sarà disponibile su `http://localhost:5173`
+### Quick Start
 
-## 🛠️ Comandi Disponibili
+```bash
+git clone https://github.com/fracabu/sellsnap.git
+cd sellsnap
+npm install
 
-- `npm run dev` - Avvia il server di sviluppo
-- `npm run build` - Build per produzione
-- `npm run preview` - Anteprima del build di produzione
+# Create .env.local
+GEMINI_API_KEY=your_key
 
-## 📁 Struttura del Progetto
-
-```
-sellsnap/
-├── components/          # Componenti React riutilizzabili
-│   ├── ChatInterface.tsx
-│   ├── ResultCard.tsx
-│   ├── Loader.tsx
-│   └── icons.tsx
-├── services/           # Servizi e API
-│   └── geminiService.ts
-├── App.tsx            # Componente principale
-├── types.ts           # Definizioni TypeScript
-├── index.tsx          # Entry point
-└── vite.config.ts     # Configurazione Vite
+npm run dev
 ```
 
-## 🎯 Come Funziona
+Access at `http://localhost:5173`
 
-1. **Upload Immagine**: L'utente carica una foto dell'oggetto da valutare
-2. **Analisi AI**: Gemini 2.5 Flash analizza l'immagine con prompt strutturato
-3. **Perizia Completa**: Generazione di valutazione JSON con categoria, condizione, prezzo e dettagli
-4. **Interazione**: Chat per domande di approfondimento sulla perizia
+---
 
-## 🔧 Tecnologie
+<a name="italiano"></a>
+## :it: Italiano
 
-- **Frontend**: React 19, TypeScript, Vite
-- **AI**: Google Gemini 2.5 Flash API
-- **Styling**: CSS personalizzato con design system
-- **Build**: Vite con supporto TypeScript
+### Panoramica
 
-## 🎨 Categorie Supportate
+Un'applicazione web che usa l'AI per fornire perizie istantanee di oggetti usati. Scatta una foto, ottieni valutazione professionale con descrizione, prezzo e campi pronti per Vinted, eBay, Subito.
 
-- **Antiquariato & Modernariato**
-- **Mobili & Arredamento** 
-- **Arte & Collezionabili**
-- **Elettronica & Hi-Fi**
-- **Moda & Accessori**
-- **Strumenti Musicali**
-- **Libri & Vinili**
-- **Orologi & Gioielli**
-- **Utensili & Attrezzature**
+### Funzionalita
 
-## 📱 Piattaforme di Vendita
+- **Analisi AI Multi-Categoria** - Antiquariato, mobili, elettronica, moda, musica, orologi, gioielli
+- **Stima Prezzo** - Ricerca mercato e comparazioni
+- **Controlli Autenticita** - Rilevamento contraffazioni e rischi legali
+- **Campi Multi-Piattaforma** - Pre-compilati per Vinted, eBay, Subito
+- **Chat Interattiva** - Domande di approfondimento sulle perizie
 
-SellSnap prepara automaticamente i campi per:
-- **Vinted** - Moda e accessori
-- **eBay** - Marketplace generale
-- **Subito.it** - Mercato locale italiano
+### Categorie
 
-## 🔒 Sicurezza
+Antiquariato, Mobili, Arte, Elettronica, Moda, Strumenti Musicali, Libri, Vinili, Orologi, Gioielli, Utensili
 
-- Controlli anti-contraffazione
-- Rilevamento oggetti vietati/pericolosi  
-- Validazione dati AI per prevenire allucinazioni
-- Gestione sicura delle API keys
+### Avvio Rapido
 
-## 🤝 Contribuire
+```bash
+git clone https://github.com/fracabu/sellsnap.git
+cd sellsnap
+npm install
 
-Contributi benvenuti! Apri una issue per segnalare bug o proporre nuove funzionalità.
+# Crea .env.local
+GEMINI_API_KEY=tua_chiave
 
-## 📄 Licenza
+npm run dev
+```
 
-Questo progetto è sotto licenza MIT.
+Accedi su `http://localhost:5173`
 
+---
+
+## Tech Stack
+
+- React 19, TypeScript, Vite
+- Google Gemini 2.5 Flash API
+
+## License
+
+MIT
+
+---
+
+<p align="center">
+  <a href="https://github.com/fracabu">
+    <img src="https://img.shields.io/badge/Made_by-fracabu-8B5CF6?style=flat-square" alt="Made by fracabu" />
+  </a>
+</p>
