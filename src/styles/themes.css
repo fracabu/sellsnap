@@ -67,6 +67,72 @@
   border-color: var(--border-secondary);
 }
 
+/* Base classes used by components - map to theme variables */
+.bg-base-100 {
+  background-color: var(--bg-primary);
+}
+
+.bg-base-200 {
+  background-color: var(--bg-secondary);
+}
+
+.bg-base-300 {
+  background-color: var(--bg-tertiary);
+}
+
+.bg-base-300\/40 {
+  background-color: color-mix(in srgb, var(--bg-tertiary) 40%, transparent);
+}
+
+.text-text-primary {
+  color: var(--text-primary);
+}
+
+.text-text-secondary {
+  color: var(--text-secondary);
+}
+
+.border-base-300 {
+  border-color: var(--border-primary);
+}
+
+.bg-base-100\/50 {
+  background-color: color-mix(in srgb, var(--bg-primary) 50%, transparent);
+}
+
+.bg-base-200\/50 {
+  background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent);
+}
+
+.bg-base-200\/90 {
+  background-color: color-mix(in srgb, var(--bg-secondary) 90%, transparent);
+}
+
+/* Brand colors */
+.text-brand-secondary {
+  color: var(--accent-secondary);
+}
+
+.text-brand-primary {
+  color: var(--accent-primary);
+}
+
+.text-brand-light {
+  color: var(--accent-primary);
+}
+
+.bg-brand-secondary {
+  background-color: var(--accent-secondary);
+}
+
+.bg-brand-primary {
+  background-color: var(--accent-primary);
+}
+
+.border-brand-secondary {
+  border-color: var(--accent-secondary);
+}
+
 .accent-theme-primary {
   color: var(--accent-primary);
 }

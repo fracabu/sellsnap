@@ -5,6 +5,7 @@ import { HomePage } from './src/pages/HomePage';
 import { LoginPage } from './src/pages/LoginPage';
 import { InventoryPage } from './src/pages/InventoryPage';
 import './src/styles/themes.css';
+import './src/i18n';
 
 const App: React.FC = () => {
   return (

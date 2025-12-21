@@ -98,7 +98,7 @@ export const SaveToInventoryButton: React.FC<SaveToInventoryButtonProps> = ({
             </button>
             <button
               onClick={() => setShowNotes(false)}
-              className="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400"
+              className="bg-base-300 text-text-secondary px-3 py-1 rounded text-sm hover:bg-base-200"
             >
               Annulla
             </button>

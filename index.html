@@ -12,15 +12,15 @@
         theme: {
           extend: {
             colors: {
-              'brand-primary': '#047857', // emerald-700
-              'brand-secondary': '#10b981', // emerald-500
-              'brand-light': '#a7f3d0', // emerald-200
-              'brand-dark': '#064e3b', // emerald-900
-              'base-100': '#111827',
-              'base-200': '#1f2937',
-              'base-300': '#374151',
-              'text-primary': '#f9fafb',
-              'text-secondary': '#d1d5db',
+              'brand-primary': 'var(--accent-primary)',
+              'brand-secondary': 'var(--accent-secondary)',
+              'brand-light': 'var(--accent-primary)',
+              'brand-dark': '#064e3b',
+              'base-100': 'var(--bg-primary)',
+              'base-200': 'var(--bg-secondary)',
+              'base-300': 'var(--bg-tertiary)',
+              'text-primary': 'var(--text-primary)',
+              'text-secondary': 'var(--text-secondary)',
             },
           }
         }
@@ -38,7 +38,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-white dark:bg-gray-900">
+  <body class="bg-base-100">
     <style>
       html { scroll-behavior: smooth; }
     </style>

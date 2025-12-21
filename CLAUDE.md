@@ -5,13 +5,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ### Environment Setup
-- Set `GEMINI_API_KEY` in `.env.local` with your Gemini API key
-- Set Firebase environment variables in `.env.local` (VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, etc.)
-- Run `npm install` to install dependencies
-- Firebase configuration is already set up in the codebase
+Create a `.env.local` file with:
+```
+GEMINI_API_KEY=your_gemini_api_key
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+VITE_FIREBASE_MEASUREMENT_ID=...
+```
 
 ### Common Commands
-- `npm run dev` - Start development server (Vite dev server on port 5173)
+- `npm run dev` - Start development server (port 5173)
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 
@@ -41,10 +48,13 @@ SellSnap is a React/TypeScript application that provides AI-powered appraisals f
 2. **Universal Appraisal System** - Structured JSON output covering multiple item categories (antiques, electronics, fashion, art, etc.)
 3. **Chat Interface** - Follow-up Q&A functionality for each appraisal with conversation history
 4. **Platform Integration** - Pre-formatted data for Vinted, eBay, and Subito marketplaces
-5. **Multi-language Interface** - Italian UI with comprehensive appraisal categories
+5. **Multi-language Interface** - Currently Italian only; English support planned
 6. **API Key Management** - localStorage-based API key storage with validation modal
 7. **User Authentication** - Firebase Authentication with email/password registration and login
 8. **Personal Inventory** - Users can save appraisals to a personal inventory stored in Firestore
+9. **Appraisal Caching** - 24-hour localStorage cache based on image hash to avoid redundant API calls
+10. **Duplicate Detection** - Checks imageHash in Firestore inventory before creating new entries
+11. **Dark/Light Theme** - ThemeContext-based theme toggle with CSS variables
 
 ### AI Integration Architecture
 - Uses Google Gemini 2.5 Flash model (`@google/genai` package) with web search capabilities
@@ -89,3 +99,14 @@ SellSnap is a React/TypeScript application that provides AI-powered appraisals f
 - Results displayed as cards with chat interface for follow-up questions
 - Custom button components (PushButton) and loading states
 - Authentication UI with login/logout functionality and inventory access
+
+### Caching Architecture
+- **services/appraisalCache.ts** - localStorage-based cache with 24-hour expiration
+- Uses image hash as cache key to avoid duplicate API calls for same images
+- **src/utils/imageHash.ts** - Generates consistent hash from multiple image files
+- Cache automatically cleaned on appraisal request
+
+### File Organization Notes
+- Root `components/` and `services/` contain core shared components
+- `src/` contains feature-specific code (auth, inventory, pages, theming)
+- Both import from root `types.ts` for shared interfaces

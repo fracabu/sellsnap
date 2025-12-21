@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { signIn, signUp } from '../services/authService';
 
 export const LoginPage: React.FC = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -30,9 +32,9 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-base-200 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-base-100 py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {/* Header del form */}
           <div className="text-center mb-8">
             <div className="flex justify-center items-center mb-4">
@@ -44,16 +46,16 @@ export const LoginPage: React.FC = () => {
                 SellSnap
               </h1>
             </div>
-            <p className="text-lg text-gray-600 mb-6">
-              {isSignUp ? 'Crea il tuo account' : 'Accedi per continuare'}
+            <p className="text-lg text-text-secondary mb-6">
+              {isSignUp ? t('auth.createAccount') : t('auth.loginToContinue')}
             </p>
-            <hr className="border-gray-200 mb-6" />
+            <hr className="border-base-300 mb-6" />
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-lg font-semibold text-gray-900 mb-2">
-                Email
+              <label htmlFor="email" className="block text-lg font-semibold text-text-primary mb-2">
+                {t('common.email')}
               </label>
               <input
                 id="email"
@@ -63,13 +65,13 @@ export const LoginPage: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none block w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="appearance-none block w-full px-4 py-3 text-lg border-2 border-base-300 rounded-lg placeholder-text-tertiary bg-base-100 text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-lg font-semibold text-gray-900 mb-2">
-                Password
+              <label htmlFor="password" className="block text-lg font-semibold text-text-primary mb-2">
+                {t('common.password')}
               </label>
               <input
                 id="password"
@@ -79,7 +81,7 @@ export const LoginPage: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none block w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="appearance-none block w-full px-4 py-3 text-lg border-2 border-base-300 rounded-lg placeholder-text-tertiary bg-base-100 text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
 
@@ -95,7 +97,7 @@ export const LoginPage: React.FC = () => {
                 disabled={loading}
                 className="w-full flex justify-center py-4 px-6 border border-transparent rounded-lg shadow-sm text-xl font-semibold text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50"
               >
-                {loading ? 'Caricamento...' : (isSignUp ? 'Registrati' : 'Accedi')}
+                {loading ? t('common.loading') : (isSignUp ? t('auth.register') : t('common.login'))}
               </button>
             </div>
 
@@ -105,7 +107,7 @@ export const LoginPage: React.FC = () => {
                 onClick={() => setIsSignUp(!isSignUp)}
                 className="text-orange-600 hover:text-orange-500 text-lg font-medium"
               >
-                {isSignUp ? 'Hai già un account? Accedi' : 'Non hai un account? Registrati'}
+                {isSignUp ? t('auth.haveAccount') : t('auth.noAccount')}
               </button>
             </div>
           </form>

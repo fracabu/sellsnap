@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PushButton } from './PushButton';
 import { ThemeToggle } from '../src/components/ThemeToggle';
+import { LanguageToggle } from '../src/components/LanguageToggle';
 
 interface HeaderProps {
   className?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
+  const { t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
@@ -25,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 ${className}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-base-100/90 backdrop-blur-md border-b border-base-300 ${className}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -41,24 +44,26 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           
           {/* Navigation Menu */}
           <nav className="hidden md:flex items-center space-x-6">
-            <button onClick={() => scrollToSection('hero')} className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors duration-200 font-medium">
-              Home
+            <button onClick={() => scrollToSection('hero')} className="text-text-secondary hover:text-orange-500 transition-colors duration-200 font-medium">
+              {t('common.home')}
             </button>
-            <button onClick={() => scrollToSection('come-funziona')} className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors duration-200 font-medium">
-              Come Funziona
+            <button onClick={() => scrollToSection('come-funziona')} className="text-text-secondary hover:text-orange-500 transition-colors duration-200 font-medium">
+              {t('common.howItWorks')}
             </button>
-            <button onClick={() => scrollToSection('carica-foto')} className="text-gray-700 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors duration-200 font-medium">
-              Carica Foto
+            <button onClick={() => scrollToSection('carica-foto')} className="text-text-secondary hover:text-orange-500 transition-colors duration-200 font-medium">
+              {t('common.uploadPhoto')}
             </button>
+            <LanguageToggle className="ml-2" />
             <ThemeToggle className="ml-2" />
           </nav>
           
           {/* Mobile Menu Button & Theme Toggle */}
           <div className="md:hidden flex items-center space-x-3">
+            <LanguageToggle />
             <ThemeToggle />
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors"
+              className="text-text-secondary hover:text-orange-500 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMobileMenuOpen ? (
@@ -73,25 +78,25 @@ export const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md">
+          <div className="md:hidden border-t border-base-300 bg-base-100/95 backdrop-blur-md">
             <nav className="px-4 py-4 space-y-4">
-              <button 
+              <button
                 onClick={() => scrollToSection('hero')}
-                className="block text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors font-medium text-left w-full"
+                className="block text-text-secondary hover:text-orange-500 transition-colors font-medium text-left w-full"
               >
-                Home
+                {t('common.home')}
               </button>
-              <button 
+              <button
                 onClick={() => scrollToSection('come-funziona')}
-                className="block text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors font-medium text-left w-full"
+                className="block text-text-secondary hover:text-orange-500 transition-colors font-medium text-left w-full"
               >
-                Come Funziona
+                {t('common.howItWorks')}
               </button>
-              <button 
+              <button
                 onClick={() => scrollToSection('carica-foto')}
-                className="block text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors font-medium text-left w-full"
+                className="block text-text-secondary hover:text-orange-500 transition-colors font-medium text-left w-full"
               >
-                Carica Foto
+                {t('common.uploadPhoto')}
               </button>
             </nav>
           </div>

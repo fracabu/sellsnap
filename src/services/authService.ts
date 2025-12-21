@@ -1,11 +1,12 @@
-import { 
-  signInWithEmailAndPassword, 
+import {
+  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
   User,
   onAuthStateChanged
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import i18n from '../i18n';
 
 export interface AuthUser {
   uid: string;
@@ -45,7 +46,7 @@ export const logOut = async (): Promise<void> => {
   try {
     await signOut(auth);
   } catch (error: any) {
-    throw new Error('Errore durante il logout');
+    throw new Error(i18n.t('auth.errors.logoutError'));
   }
 };
 
@@ -66,16 +67,16 @@ export const onAuthChange = (callback: (user: AuthUser | null) => void) => {
 const getAuthErrorMessage = (errorCode: string): string => {
   switch (errorCode) {
     case 'auth/user-not-found':
-      return 'Utente non trovato';
+      return i18n.t('auth.errors.userNotFound');
     case 'auth/wrong-password':
-      return 'Password incorretta';
+      return i18n.t('auth.errors.wrongPassword');
     case 'auth/email-already-in-use':
-      return 'Email già in uso';
+      return i18n.t('auth.errors.emailInUse');
     case 'auth/weak-password':
-      return 'Password troppo debole';
+      return i18n.t('auth.errors.weakPassword');
     case 'auth/invalid-email':
-      return 'Email non valida';
+      return i18n.t('auth.errors.invalidEmail');
     default:
-      return 'Errore di autenticazione';
+      return i18n.t('auth.errors.generic');
   }
 };

@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getUniversalAppraisal, getFollowUpAnswer, hasApiKey, setApiKey, validateApiKey } from '../../services/geminiService';
 import type { AppraisalResult, ChatMessage } from '../../types';
 import { calculateMultipleImagesHash } from '../utils/imageHash';
@@ -37,6 +38,7 @@ const dataUrlToGenerativePart = (dataUrl: string) => {
 };
 
 export const HomePage: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [results, setResults] = useState<AppraisalResult[]>([]);
   const [currentImages, setCurrentImages] = useState<string[]>([]);
   const [error, setError] = useState<string>('');
@@ -288,7 +290,7 @@ export const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans flex flex-col overflow-hidden relative pt-20">
+    <div className="h-full bg-base-100 text-text-primary font-sans flex flex-col overflow-hidden relative pt-20">
       
       <Header />
       
@@ -305,24 +307,26 @@ export const HomePage: React.FC = () => {
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <AnimatedSection animation="fadeUp" delay={200}>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-300 mb-6 leading-tight">
-              Scatta, Valuta, Vendi.<br className="sm:hidden" /> In un attimo.
+              {t('hero.title')}
             </h1>
           </AnimatedSection>
-          
+
           <AnimatedSection animation="fadeUp" delay={400}>
             <p className="text-lg sm:text-xl lg:text-2xl text-text-secondary mb-8 max-w-3xl mx-auto leading-relaxed px-2">
-              Una foto, una valutazione AI istantanea. <span className="text-orange-400 font-semibold">Gemini</span> crea annunci ottimizzati per tutti i marketplace.
+              {t('hero.subtitle').split('<highlight>')[0]}
+              <span className="text-orange-400 font-semibold">Gemini</span>
+              {t('hero.subtitle').split('</highlight>')[1]}
             </p>
           </AnimatedSection>
-          
+
           <AnimatedSection animation="fadeUp" delay={600} options={{ rootMargin: '200px 0px 0px 0px', threshold: 0 }}>
             <div className="flex justify-center px-4">
-              <PushButton 
+              <PushButton
                 onClick={() => scrollToSection('come-funziona')}
                 variant="purple"
                 className="text-lg font-semibold px-8 py-4"
               >
-                Scopri Come Funziona
+                {t('hero.cta')}
               </PushButton>
             </div>
           </AnimatedSection>
@@ -342,11 +346,11 @@ export const HomePage: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">1. Scatta</h3>
-                <p className="text-text-secondary text-sm sm:text-base leading-relaxed">Fotografa il tuo oggetto con lo smartphone o carica un'immagine esistente</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">{t('howItWorks.step1Title')}</h3>
+                <p className="text-text-secondary text-sm sm:text-base leading-relaxed">{t('howItWorks.step1Desc')}</p>
               </div>
             </AnimatedSection>
-            
+
             <AnimatedSection animation="fadeUp" delay={400}>
               <div className="text-center p-4">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-orange-500 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg transform transition-transform duration-300 hover:scale-110">
@@ -354,11 +358,11 @@ export const HomePage: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">2. Analizza</h3>
-                <p className="text-text-secondary text-sm sm:text-base leading-relaxed">L'AI analizza categoria, condizione e stima il prezzo di mercato</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">{t('howItWorks.step2Title')}</h3>
+                <p className="text-text-secondary text-sm sm:text-base leading-relaxed">{t('howItWorks.step2Desc')}</p>
               </div>
             </AnimatedSection>
-            
+
             <AnimatedSection animation="fadeUp" delay={600}>
               <div className="text-center p-4">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-orange-500 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg transform transition-transform duration-300 hover:scale-110">
@@ -366,20 +370,20 @@ export const HomePage: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">3. Vendi</h3>
-                <p className="text-text-secondary text-sm sm:text-base leading-relaxed">Ricevi campi pre-compilati per Vinted, eBay e Subito pronti all'uso</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3">{t('howItWorks.step3Title')}</h3>
+                <p className="text-text-secondary text-sm sm:text-base leading-relaxed">{t('howItWorks.step3Desc')}</p>
               </div>
             </AnimatedSection>
           </div>
-          
+
           <AnimatedSection animation="fadeUp" delay={800}>
             <div className="text-center mt-12">
-              <PushButton 
+              <PushButton
                 onClick={() => scrollToSection('carica-foto')}
                 variant="purple"
                 className="text-lg font-semibold px-8 py-4"
               >
-                Prova Gratis
+                {t('howItWorks.cta')}
               </PushButton>
             </div>
           </AnimatedSection>
@@ -394,19 +398,19 @@ export const HomePage: React.FC = () => {
             <div className="flex justify-center mb-8">
               <div className="bg-base-200 rounded-lg px-6 py-4 flex items-center gap-4">
                 <div>
-                  <p className="text-sm font-medium">Benvenuto, {user.email}</p>
+                  <p className="text-sm font-medium">{t('upload.welcome')}, {user.email}</p>
                 </div>
                 <button
                   onClick={() => navigate('/inventory')}
                   className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700"
                 >
-                  Inventario
+                  {t('common.inventory')}
                 </button>
                 <button
                   onClick={() => logOut()}
                   className="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700"
                 >
-                  Logout
+                  {t('common.logout')}
                 </button>
               </div>
             </div>
@@ -416,7 +420,7 @@ export const HomePage: React.FC = () => {
                 onClick={() => navigate('/login')}
                 className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700"
               >
-                Accedi per salvare le perizie
+                {t('upload.loginToSave')}
               </button>
             </div>
           )}
@@ -433,7 +437,7 @@ export const HomePage: React.FC = () => {
                 <div className={`bg-base-200 rounded-2xl p-4 flex flex-col h-full ${!canUpload ? 'opacity-50' : ''}`}>
                   <div className="mb-4">
                     <div className="flex items-center mb-4">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${canUpload ? 'bg-gradient-to-br from-purple-600 to-purple-500' : 'bg-gray-400'}`}>
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${canUpload ? 'bg-gradient-to-br from-purple-600 to-purple-500' : 'bg-text-tertiary'}`}>
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -441,10 +445,10 @@ export const HomePage: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-text-primary mb-1">
-                          2. Carica Foto
+                          {t('upload.stepTitle')}
                         </h3>
                         <p className="text-text-secondary text-sm">
-                          {canUpload ? 'Ora puoi caricare la foto del tuo oggetto' : 'Prima configura la tua API key'}
+                          {canUpload ? t('upload.stepDescEnabled') : t('upload.stepDescDisabled')}
                         </p>
                       </div>
                     </div>
@@ -467,12 +471,12 @@ export const HomePage: React.FC = () => {
                     </div>
                   ) : (
                     <div className="text-center mb-4">
-                      <UploadIcon className={`w-12 h-12 mx-auto mb-4 ${canUpload ? 'text-purple-500' : 'text-gray-400'}`} />
+                      <UploadIcon className={`w-12 h-12 mx-auto mb-4 ${canUpload ? 'text-purple-500' : 'text-text-tertiary'}`} />
                       <h4 className="text-base font-semibold mb-2">
-                        {canUpload ? 'Carica le foto del tuo oggetto' : 'Configura prima l\'API key'}
+                        {canUpload ? t('upload.uploadTitle') : t('upload.uploadTitleDisabled')}
                       </h4>
                       <p className="text-sm mb-4 text-text-secondary">
-                        {canUpload ? 'Scegli come vuoi aggiungere le immagini' : 'Inserisci la tua chiave API nella colonna di sinistra'}
+                        {canUpload ? t('upload.uploadDesc') : t('upload.uploadDescDisabled')}
                       </p>
                       {canUpload && (
                         <>
@@ -486,7 +490,7 @@ export const HomePage: React.FC = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                               </svg>
-                              Scatta Foto
+                              {t('upload.takePhoto')}
                             </PushButton>
                             <PushButton
                               onClick={() => document.getElementById('gallery-input')?.click()}
@@ -496,10 +500,10 @@ export const HomePage: React.FC = () => {
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
-                              Dalla Galleria
+                              {t('upload.fromGallery')}
                             </PushButton>
                           </div>
-                          <p className="text-xs text-text-secondary/70">Massimo 5 foto • JPG, PNG, WebP</p>
+                          <p className="text-xs text-text-secondary/70">{t('upload.maxPhotos')}</p>
                         </>
                       )}
                     </div>
@@ -513,17 +517,17 @@ export const HomePage: React.FC = () => {
                           <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                         </svg>
                         <div className="flex-1">
-                          <h4 className="text-orange-900 dark:text-orange-200 font-bold mb-1">Oggetto già valutato</h4>
+                          <h4 className="text-orange-900 dark:text-orange-200 font-bold mb-1">{t('upload.duplicateTitle')}</h4>
                           <p className="text-orange-800 dark:text-orange-300 text-sm mb-2">
-                            Questo oggetto è già presente nel tuo inventario:
+                            {t('upload.duplicateDesc')}
                           </p>
-                          <div className="bg-white dark:bg-gray-800 border border-orange-200 dark:border-orange-600 rounded p-3 text-sm">
-                            <p className="text-gray-900 dark:text-gray-100"><strong>Titolo:</strong> {duplicateInfo.existingItem.title}</p>
-                            <p className="text-gray-900 dark:text-gray-100"><strong>Prezzo attuale:</strong> €{duplicateInfo.existingItem.priceSuggested}</p>
-                            <p className="text-gray-900 dark:text-gray-100"><strong>Salvato il:</strong> {duplicateInfo.existingItem.savedAt?.toDate?.()?.toLocaleDateString('it-IT') || 'Data non disponibile'}</p>
+                          <div className="bg-base-100 border border-orange-200 dark:border-orange-600 rounded p-3 text-sm">
+                            <p className="text-text-primary"><strong>{t('upload.duplicateTitle2')}</strong> {duplicateInfo.existingItem.title}</p>
+                            <p className="text-text-primary"><strong>{t('upload.duplicatePrice')}</strong> €{duplicateInfo.existingItem.priceSuggested}</p>
+                            <p className="text-text-primary"><strong>{t('upload.duplicateSavedAt')}</strong> {duplicateInfo.existingItem.savedAt?.toDate?.()?.toLocaleDateString(i18n.language) || t('common.dateNotAvailable')}</p>
                           </div>
                           <p className="text-orange-800 dark:text-orange-300 text-sm mt-2">
-                            Procedendo con l'analisi aggiornerò il prezzo se necessario.
+                            {t('upload.duplicateUpdateNote')}
                           </p>
                         </div>
                       </div>
@@ -555,7 +559,7 @@ export const HomePage: React.FC = () => {
                   {processState === 'processing' && (
                     <div className="bg-base-300 p-3 rounded-lg shadow-sm border border-base-300 mb-4">
                       <div className="text-center mb-2">
-                        <p className="text-xs font-medium text-text-primary mb-1">Analisi AI in corso...</p>
+                        <p className="text-xs font-medium text-text-primary mb-1">{t('upload.analyzing')}</p>
                       </div>
                       <div className="w-full bg-base-100 rounded-full h-1.5 mb-2">
                         <div className="bg-gradient-to-r from-purple-600 to-purple-400 h-1.5 rounded-full animate-pulse" 
@@ -585,7 +589,7 @@ export const HomePage: React.FC = () => {
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                         </svg>
-                        Analizza {currentImages.length} foto
+                        {t('upload.analyzePhotos', { count: currentImages.length })}
                       </PushButton>
                     )}
                     <PushButton
@@ -595,14 +599,14 @@ export const HomePage: React.FC = () => {
                       className="flex items-center gap-2 px-4 py-2 font-medium text-sm"
                     >
                       <ResetIcon className="w-4 h-4" />
-                      Reset
+                      {t('upload.reset')}
                     </PushButton>
                   </div>
 
                   {/* Freccia animata quando analisi completata */}
                   {results.length > 0 && (
                     <div className="flex flex-col items-center mt-6">
-                      <p className="text-text-secondary text-sm mb-2">La tua perizia è pronta!</p>
+                      <p className="text-text-secondary text-sm mb-2">{t('upload.ready')}</p>
                       <div className="animate-bounce">
                         <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />

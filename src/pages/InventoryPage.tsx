@@ -81,17 +81,17 @@ export const InventoryPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
-          <p className="mt-2 text-gray-600">Caricamento inventario...</p>
+          <p className="mt-2 text-text-secondary">Caricamento inventario...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-base-200">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-base-200/90 backdrop-blur-md border-b border-base-300">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -132,13 +132,13 @@ export const InventoryPage: React.FC = () => {
       <div className="max-w-7xl mx-auto pt-24 pb-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Il Mio Inventario</h1>
-            <p className="mt-2 text-gray-600">Gestisci tutte le tue perizie salvate</p>
+            <h1 className="text-3xl font-bold text-text-primary">Il Mio Inventario</h1>
+            <p className="mt-2 text-text-secondary">Gestisci tutte le tue perizie salvate</p>
           </div>
 
           {/* Card delle statistiche */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="bg-base-100 overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -148,15 +148,15 @@ export const InventoryPage: React.FC = () => {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Totale Oggetti</dt>
-                      <dd className="text-2xl font-bold text-gray-900">{inventory.length}</dd>
+                      <dt className="text-sm font-medium text-text-secondary truncate">Totale Oggetti</dt>
+                      <dd className="text-2xl font-bold text-text-primary">{inventory.length}</dd>
                     </dl>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="bg-base-100 overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -166,8 +166,8 @@ export const InventoryPage: React.FC = () => {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Valore Stimato</dt>
-                      <dd className="text-2xl font-bold text-gray-900">
+                      <dt className="text-sm font-medium text-text-secondary truncate">Valore Stimato</dt>
+                      <dd className="text-2xl font-bold text-text-primary">
                         €{inventory.reduce((sum, item) => sum + (item.priceSuggested || 0), 0).toLocaleString('it-IT')}
                       </dd>
                     </dl>
@@ -176,7 +176,7 @@ export const InventoryPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="bg-base-100 overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -186,14 +186,14 @@ export const InventoryPage: React.FC = () => {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">In Vendita</dt>
-                      <dd className="text-2xl font-bold text-gray-900">
-                        {inventory.length > 0 
+                      <dt className="text-sm font-medium text-text-secondary truncate">In Vendita</dt>
+                      <dd className="text-2xl font-bold text-text-primary">
+                        {inventory.length > 0
                           ? `${Math.round((inventory.filter(item => item.isForSale).length / inventory.length) * 100)}%`
                           : '0%'
                         }
                       </dd>
-                      <dd className="text-xs text-gray-400 mt-1">
+                      <dd className="text-xs text-text-tertiary mt-1">
                         {inventory.filter(item => item.isForSale).length} di {inventory.length} oggetti
                       </dd>
                     </dl>
@@ -211,13 +211,13 @@ export const InventoryPage: React.FC = () => {
 
           {inventory.length === 0 ? (
             <div className="text-center py-12">
-              <div className="mx-auto h-12 w-12 text-gray-400">
+              <div className="mx-auto h-12 w-12 text-text-tertiary">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 48 48">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8-4-8 4m16 0v18l-8 4-8-4V7m16 18l-8 4-8-4M28 21V3l8 4v18l-8 4-8-4V7l8-4z" />
                 </svg>
               </div>
-              <h3 className="mt-4 text-lg font-medium text-gray-900">Il tuo inventario è vuoto</h3>
-              <p className="mt-2 text-gray-500">
+              <h3 className="mt-4 text-lg font-medium text-text-primary">Il tuo inventario è vuoto</h3>
+              <p className="mt-2 text-text-secondary">
                 Inizia a salvare le tue perizie per vederle qui
               </p>
               <div className="mt-6">
@@ -232,15 +232,15 @@ export const InventoryPage: React.FC = () => {
           ) : (
             <div className="grid gap-6 lg:grid-cols-2">
               {inventory.map((item) => (
-                <div key={item.id} className="bg-white overflow-hidden shadow-lg rounded-lg border">
+                <div key={item.id} className="bg-base-100 overflow-hidden shadow-lg rounded-lg border border-base-300">
                   <div className="px-6 py-6">
                     {/* Header della card */}
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        <h3 className="text-xl font-semibold text-text-primary mb-2">
                           {item.title}
                         </h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                        <div className="flex items-center space-x-4 text-sm text-text-secondary">
                           <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
                             {item.category}
                           </span>
@@ -260,14 +260,14 @@ export const InventoryPage: React.FC = () => {
                         <button
                           onClick={() => handleToggleForSale(item.id!, item.isForSale || false)}
                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                            item.isForSale ? 'bg-green-600' : 'bg-gray-300'
+                            item.isForSale ? 'bg-green-600' : 'bg-base-300'
                           }`}
                         >
                           <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                             item.isForSale ? 'translate-x-6' : 'translate-x-1'
                           }`} />
                         </button>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-text-secondary">
                           {item.isForSale ? 'In vendita' : 'Non in vendita'}
                         </span>
                         
@@ -284,13 +284,13 @@ export const InventoryPage: React.FC = () => {
                     </div>
 
                     {/* Prezzo */}
-                    <div className="mb-4 p-3 bg-green-50 rounded-lg">
+                    <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">Prezzo stimato:</span>
+                        <span className="text-sm font-medium text-text-secondary">Prezzo stimato:</span>
                         <span className="text-2xl font-bold text-green-600">€{item.priceSuggested.toLocaleString('it-IT')}</span>
                       </div>
                       {item.size && (
-                        <div className="mt-2 text-sm text-gray-600">
+                        <div className="mt-2 text-sm text-text-secondary">
                           Taglia: <span className="font-medium">{item.size}</span>
                         </div>
                       )}
@@ -309,7 +309,7 @@ export const InventoryPage: React.FC = () => {
                         <div className="text-sm space-y-1">
                           <p><span className="font-medium">Categoria:</span> {item.vintedCategory || 'Non specificata'}</p>
                           <p><span className="font-medium">Descrizione:</span></p>
-                          <p className="text-gray-700 bg-white p-2 rounded text-xs leading-relaxed">
+                          <p className="text-text-secondary bg-base-100 p-2 rounded text-xs leading-relaxed">
                             {item.vintedDescription || 'Descrizione non disponibile'}
                           </p>
                         </div>
@@ -326,7 +326,7 @@ export const InventoryPage: React.FC = () => {
                         <div className="text-sm space-y-1">
                           <p><span className="font-medium">Categoria:</span> {item.subitoCategory || 'Non specificata'}</p>
                           <p><span className="font-medium">Descrizione:</span></p>
-                          <p className="text-gray-700 bg-white p-2 rounded text-xs leading-relaxed">
+                          <p className="text-text-secondary bg-base-100 p-2 rounded text-xs leading-relaxed">
                             {item.subitoDescription || 'Descrizione non disponibile'}
                           </p>
                         </div>
@@ -334,8 +334,8 @@ export const InventoryPage: React.FC = () => {
                     </div>
 
                     {/* Footer con info aggiuntive */}
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <div className="flex justify-between text-xs text-gray-500">
+                    <div className="mt-4 pt-4 border-t border-base-300">
+                      <div className="flex justify-between text-xs text-text-secondary">
                         <span>Salvato il {formatDate(item.savedAt)}</span>
                         {item.notes && (
                           <span className="truncate ml-4">Note: {item.notes}</span>
