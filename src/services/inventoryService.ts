@@ -9,6 +9,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  writeBatch,
   Timestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -198,5 +199,30 @@ export const deleteInventoryItem = async (itemId: string): Promise<void> => {
   } catch (error) {
     console.error('Errore nell\'eliminare l\'item dall\'inventario:', error);
     throw new Error('Impossibile eliminare l\'item dall\'inventario');
+  }
+};
+
+export const clearUserInventory = async (userId: string): Promise<number> => {
+  try {
+    const inventoryRef = collection(db, 'inventory');
+    const q = query(inventoryRef, where('userId', '==', userId));
+
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      return 0;
+    }
+
+    // Firestore accetta al massimo 500 operazioni per batch
+    const docs = querySnapshot.docs;
+    for (let i = 0; i < docs.length; i += 500) {
+      const batch = writeBatch(db);
+      docs.slice(i, i + 500).forEach((docSnapshot) => batch.delete(docSnapshot.ref));
+      await batch.commit();
+    }
+
+    return docs.length;
+  } catch (error) {
+    console.error('Errore nello svuotare l\'inventario:', error);
+    throw new Error('Impossibile svuotare l\'inventario');
   }
 };
