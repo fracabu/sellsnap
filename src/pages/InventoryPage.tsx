@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { InventoryItem, getUserInventory, deleteInventoryItem, toggleForSaleStatus, clearUserInventory } from '../services/inventoryService';
+import { InventoryItem, getUserInventory, deleteInventoryItem, toggleForSaleStatus, clearUserInventory, updateInventoryItem } from '../services/inventoryService';
 import { onAuthChange, logOut, type AuthUser } from '../services/authService';
 import { downloadInventoryCsv } from '../utils/exportInventoryCsv';
 
@@ -10,6 +10,9 @@ export const InventoryPage: React.FC = () => {
   const [error, setError] = useState('');
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isClearing, setIsClearing] = useState(false);
+  const [editingNotesId, setEditingNotesId] = useState<string | null>(null);
+  const [notesDraft, setNotesDraft] = useState('');
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,6 +49,34 @@ export const InventoryPage: React.FC = () => {
       } catch (error: any) {
         setError(error.message);
       }
+    }
+  };
+
+  const handleStartEditNotes = (item: InventoryItem) => {
+    setEditingNotesId(item.id!);
+    setNotesDraft(item.notes || '');
+  };
+
+  const handleCancelEditNotes = () => {
+    setEditingNotesId(null);
+    setNotesDraft('');
+  };
+
+  const handleSaveNotes = async (itemId: string) => {
+    setIsSavingNotes(true);
+    setError('');
+    try {
+      const nuovaNota = notesDraft.trim();
+      await updateInventoryItem(itemId, { notes: nuovaNota });
+      setInventory(inventory.map(item =>
+        item.id === itemId ? { ...item, notes: nuovaNota } : item
+      ));
+      setEditingNotesId(null);
+      setNotesDraft('');
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setIsSavingNotes(false);
     }
   };
 
@@ -409,13 +440,51 @@ export const InventoryPage: React.FC = () => {
                     </div>
 
                     {/* Footer con info aggiuntive */}
-                    <div className="mt-4 pt-4 border-t border-base-300">
-                      <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-xs text-text-secondary">
-                        <span className="whitespace-nowrap">Salvato il {formatDate(item.savedAt)}</span>
-                        {item.notes && (
-                          <span className="sm:ml-4 break-words">Note: {item.notes}</span>
-                        )}
+                    <div className="mt-4 pt-4 border-t border-base-300 space-y-2">
+                      <div className="text-xs text-text-secondary">
+                        Salvato il {formatDate(item.savedAt)}
                       </div>
+
+                      {editingNotesId === item.id ? (
+                        <div className="space-y-2">
+                          <textarea
+                            value={notesDraft}
+                            onChange={(e) => setNotesDraft(e.target.value)}
+                            rows={2}
+                            autoFocus
+                            placeholder="Es. Scatola 7 · terzo piano con ascensore"
+                            className="w-full text-sm p-2 rounded border border-base-300 bg-base-200 text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleSaveNotes(item.id!)}
+                              disabled={isSavingNotes}
+                              className="flex-1 sm:flex-none min-h-[44px] px-4 py-2 rounded bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {isSavingNotes ? 'Salvataggio...' : 'Salva nota'}
+                            </button>
+                            <button
+                              onClick={handleCancelEditNotes}
+                              disabled={isSavingNotes}
+                              className="flex-1 sm:flex-none min-h-[44px] px-4 py-2 rounded border border-base-300 text-text-secondary text-sm hover:bg-base-200 transition-colors disabled:opacity-50"
+                            >
+                              Annulla
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleStartEditNotes(item)}
+                          className="w-full min-h-[44px] flex items-start gap-2 text-left text-xs text-text-secondary hover:text-orange-500 transition-colors"
+                        >
+                          <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          <span className="break-words">
+                            {item.notes ? `Note: ${item.notes}` : 'Aggiungi una nota (scatola, piano, canale di vendita...)'}
+                          </span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
