@@ -185,7 +185,7 @@
     "deleteItemError": "Unable to delete item from inventory",
     "apiKeyInvalid": "The API key is not valid. Check it or create a new one in Google AI Studio.",
     "apiPermissionDenied": "The API key is not allowed to use the Gemini model. Check the project in Google AI Studio.",
-    "apiQuotaExceeded": "API key quota exhausted or too many requests. Wait a few minutes and try again.",
+    "apiQuotaExceeded": "Google rejected the request for exhausted quota on all available models. With free keys this can happen even without prior requests: check the key's limits in Google AI Studio (aistudio.google.com) or enable billing.",
     "imageTooLarge": "The images are too large. Try fewer or smaller photos.",
     "modelUnavailable": "The Gemini model is not available for this API key. Please try again later.",
     "apiOverloaded": "The Gemini service is temporarily overloaded. Please try again shortly.",

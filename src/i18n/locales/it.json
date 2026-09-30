@@ -185,7 +185,7 @@
     "deleteItemError": "Impossibile eliminare l'item dall'inventario",
     "apiKeyInvalid": "La chiave API non è valida. Controllala o generane una nuova su Google AI Studio.",
     "apiPermissionDenied": "La chiave API non ha i permessi per usare il modello Gemini. Verifica il progetto su Google AI Studio.",
-    "apiQuotaExceeded": "Quota della chiave API esaurita o troppe richieste. Attendi qualche minuto e riprova.",
+    "apiQuotaExceeded": "Google ha rifiutato la richiesta per quota esaurita su tutti i modelli disponibili. Con le chiavi gratuite può capitare anche senza aver fatto richieste: verifica i limiti della chiave su Google AI Studio (aistudio.google.com) o attiva la fatturazione.",
     "imageTooLarge": "Le immagini sono troppo pesanti. Prova con meno foto o foto più piccole.",
     "modelUnavailable": "Il modello Gemini non è disponibile per questa chiave API. Riprova più tardi.",
     "apiOverloaded": "Il servizio Gemini è momentaneamente sovraccarico. Riprova tra poco.",
