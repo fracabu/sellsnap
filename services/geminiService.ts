@@ -10,7 +10,7 @@ import {
 
 // Modelli in ordine di preferenza: "gemini-flash-latest" punta sempre all'ultimo Flash
 // stabile; gemini-2.5-flash resta come fallback per le chiavi che vi hanno ancora accesso.
-const MODELS = ["gemini-flash-latest", "gemini-2.5-flash"];
+const MODELS = ["gemini-flash-latest", "gemini-2.5-flash", "gemini-flash-lite-latest"];
 
 // Ricorda il modello che ha funzionato per evitare tentativi inutili
 const MODEL_STORAGE_KEY = 'gemini_working_model';
@@ -35,24 +35,51 @@ const isModelUnavailableError = (error: unknown): boolean => {
     return status === 404 || /NOT_FOUND|not found|not supported|no longer available|deprecated/i.test(text);
 };
 
-// Chiama generateContent provando i modelli in ordine finché uno risponde
+// Quota esaurita: sulle chiavi gratuite Google a volte assegna limite 0 a singoli
+// modelli o alla ricerca web, quindi conviene provare altre combinazioni.
+const isQuotaError = (error: unknown): boolean =>
+    getErrorStatus(error) === 429 || /RESOURCE_EXHAUSTED|quota/i.test(getErrorText(error));
+
+type GenerateRequest = Omit<Parameters<GoogleGenAI['models']['generateContent']>[0], 'model'>;
+
+// Chiama generateContent provando i modelli in ordine finché uno risponde.
+// Se qualche modello fallisce per quota e la richiesta usa la ricerca web, riprova senza.
 const generateWithFallback = async (
     ai: GoogleGenAI,
-    request: Omit<Parameters<GoogleGenAI['models']['generateContent']>[0], 'model'>
+    request: GenerateRequest
 ): Promise<GenerateContentResponse> => {
+    const attempts: GenerateRequest[] = [request];
+    if (request.config?.tools?.length) {
+        const { tools, ...configWithoutTools } = request.config;
+        attempts.push({ ...request, config: configWithoutTools });
+    }
+
     let lastError: unknown;
-    for (const candidate of getModelOrder()) {
-        try {
-            const response = await ai.models.generateContent({ ...request, model: candidate });
-            localStorage.setItem(MODEL_STORAGE_KEY, candidate);
-            return response;
-        } catch (error) {
-            lastError = error;
-            if (!isModelUnavailableError(error)) throw error;
-            console.warn(`Modello ${candidate} non disponibile, provo il successivo`, error);
+    for (const attempt of attempts) {
+        let sawQuotaError = false;
+        for (const candidate of getModelOrder()) {
+            try {
+                const response = await ai.models.generateContent({ ...attempt, model: candidate });
+                localStorage.setItem(MODEL_STORAGE_KEY, candidate);
+                return response;
+            } catch (error) {
+                lastError = error;
+                const quota = isQuotaError(error);
+                if (!quota && !isModelUnavailableError(error)) throw error;
+                if (quota) sawQuotaError = true;
+                console.warn(`Modello ${candidate} non utilizzabile, provo il successivo`, error);
+            }
         }
+        if (!sawQuotaError) break;
     }
     throw lastError;
+};
+
+// Estrae il messaggio leggibile dall'errore dell'API (spesso è un JSON serializzato)
+const getApiErrorDetail = (error: unknown): string => {
+    const text = getErrorText(error);
+    const match = text.match(/"message"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    return (match ? match[1].replace(/\\n/g, ' ') : text).slice(0, 300);
 };
 
 // Traduce l'errore dell'API in un messaggio comprensibile per l'utente
@@ -63,7 +90,7 @@ const describeApiError = (error: unknown): string => {
         return i18n.t('errors.apiKeyInvalid');
     }
     if (status === 403 || /PERMISSION_DENIED/i.test(text)) return i18n.t('errors.apiPermissionDenied');
-    if (status === 429 || /RESOURCE_EXHAUSTED|quota/i.test(text)) return i18n.t('errors.apiQuotaExceeded');
+    if (isQuotaError(error)) return `${i18n.t('errors.apiQuotaExceeded')} (${getApiErrorDetail(error)})`;
     if (status === 413 || /payload|too large|request size/i.test(text)) return i18n.t('errors.imageTooLarge');
     if (isModelUnavailableError(error)) return i18n.t('errors.modelUnavailable');
     if ((status !== undefined && status >= 500) || /UNAVAILABLE|overloaded/i.test(text)) return i18n.t('errors.apiOverloaded');
