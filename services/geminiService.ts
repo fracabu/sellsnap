@@ -8,7 +8,68 @@ import {
   updateCachedPrice
 } from './appraisalCache';
 
-const model = "gemini-2.5-flash";
+// Modelli in ordine di preferenza: "gemini-flash-latest" punta sempre all'ultimo Flash
+// stabile; gemini-2.5-flash resta come fallback per le chiavi che vi hanno ancora accesso.
+const MODELS = ["gemini-flash-latest", "gemini-2.5-flash"];
+
+// Ricorda il modello che ha funzionato per evitare tentativi inutili
+const MODEL_STORAGE_KEY = 'gemini_working_model';
+
+const getModelOrder = (): string[] => {
+    const saved = localStorage.getItem(MODEL_STORAGE_KEY);
+    return saved && MODELS.includes(saved) ? [saved, ...MODELS.filter(m => m !== saved)] : MODELS;
+};
+
+const getErrorStatus = (error: unknown): number | undefined => {
+    const status = (error as { status?: unknown })?.status;
+    return typeof status === 'number' ? status : undefined;
+};
+
+const getErrorText = (error: unknown): string =>
+    error instanceof Error ? error.message : String(error ?? '');
+
+// Errori per cui ha senso riprovare con un altro modello
+const isModelUnavailableError = (error: unknown): boolean => {
+    const status = getErrorStatus(error);
+    const text = getErrorText(error);
+    return status === 404 || /NOT_FOUND|not found|not supported|no longer available|deprecated/i.test(text);
+};
+
+// Chiama generateContent provando i modelli in ordine finché uno risponde
+const generateWithFallback = async (
+    ai: GoogleGenAI,
+    request: Omit<Parameters<GoogleGenAI['models']['generateContent']>[0], 'model'>
+): Promise<GenerateContentResponse> => {
+    let lastError: unknown;
+    for (const candidate of getModelOrder()) {
+        try {
+            const response = await ai.models.generateContent({ ...request, model: candidate });
+            localStorage.setItem(MODEL_STORAGE_KEY, candidate);
+            return response;
+        } catch (error) {
+            lastError = error;
+            if (!isModelUnavailableError(error)) throw error;
+            console.warn(`Modello ${candidate} non disponibile, provo il successivo`, error);
+        }
+    }
+    throw lastError;
+};
+
+// Traduce l'errore dell'API in un messaggio comprensibile per l'utente
+const describeApiError = (error: unknown): string => {
+    const status = getErrorStatus(error);
+    const text = getErrorText(error);
+    if (/API[_ ]key[_ ]not[_ ]valid|API_KEY_INVALID|invalid api key/i.test(text) || status === 401) {
+        return i18n.t('errors.apiKeyInvalid');
+    }
+    if (status === 403 || /PERMISSION_DENIED/i.test(text)) return i18n.t('errors.apiPermissionDenied');
+    if (status === 429 || /RESOURCE_EXHAUSTED|quota/i.test(text)) return i18n.t('errors.apiQuotaExceeded');
+    if (status === 413 || /payload|too large|request size/i.test(text)) return i18n.t('errors.imageTooLarge');
+    if (isModelUnavailableError(error)) return i18n.t('errors.modelUnavailable');
+    if ((status !== undefined && status >= 500) || /UNAVAILABLE|overloaded/i.test(text)) return i18n.t('errors.apiOverloaded');
+    if (/failed to fetch|network|load failed/i.test(text)) return i18n.t('errors.networkError');
+    return `${i18n.t('errors.appraisalError')}${text ? ` (${text.slice(0, 200)})` : ''}`;
+};
 
 // Funzione per ottenere l'API key dal localStorage
 const getApiKey = (): string => {
@@ -43,8 +104,7 @@ export const validateApiKey = async (apiKey: string): Promise<boolean> => {
     try {
         const testAI = new GoogleGenAI({ apiKey });
         // Prova una chiamata semplice per testare l'API key
-        await testAI.models.generateContent({
-            model: model,
+        await generateWithFallback(testAI, {
             contents: { parts: [{ text: "Test" }] }
         });
         return true;
@@ -85,15 +145,19 @@ Schema JSON da usare (non includere nel tuo output, solo per riferimento):
     try {
         const ai = getAI();
         const parts = Array.isArray(imageParts) ? [...imageParts, { text: prompt }] : [imageParts, { text: prompt }];
-        const response: GenerateContentResponse = await ai.models.generateContent({
-            model: model,
+        const response: GenerateContentResponse = await generateWithFallback(ai, {
             contents: { parts },
             config: {
                 tools: [{ googleSearch: {} }],
             },
         });
         
-        const jsonText = response.text.trim();
+        const rawText = response.text;
+        if (!rawText) {
+            const reason = response.promptFeedback?.blockReason || response.candidates?.[0]?.finishReason;
+            throw new Error(i18n.t('errors.emptyResponse') + (reason ? ` (${reason})` : ''));
+        }
+        const jsonText = rawText.trim();
         let appraisalData: UniversalAppraisal;
 
         try {
@@ -131,7 +195,10 @@ Schema JSON da usare (non includere nel tuo output, solo per riferimento):
         if (error instanceof SyntaxError) {
              throw new Error(i18n.t('errors.invalidJson'));
         }
-        throw new Error(i18n.t('errors.appraisalError'));
+        if (error instanceof Error && error.message.startsWith(i18n.t('errors.emptyResponse'))) {
+            throw error;
+        }
+        throw new Error(describeApiError(error));
     }
 }
 
@@ -151,7 +218,7 @@ ${JSON.stringify(appraisal, null, 2)}`;
 
   const ai = getAI();
   const chat: Chat = ai.chats.create({
-    model: model,
+    model: getModelOrder()[0],
     config: {
       tools: [{ googleSearch: {} }],
       systemInstruction: systemInstruction,
@@ -171,6 +238,6 @@ ${JSON.stringify(appraisal, null, 2)}`;
     return { text, sources };
   } catch (error) {
     console.error("Error getting follow-up answer:", error);
-    throw new Error(i18n.t('errors.followUpError'));
+    throw new Error(describeApiError(error).replace(i18n.t('errors.appraisalError'), i18n.t('errors.followUpError')));
   }
 }

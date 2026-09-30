@@ -28,6 +28,36 @@ const fileToDataUrl = (file: File): Promise<string> => {
     });
 };
 
+// Ridimensiona e comprime le foto (quelle da smartphone pesano diversi MB)
+// prima di inviarle a Gemini, per restare nei limiti di dimensione della richiesta.
+const MAX_IMAGE_SIDE = 1600;
+const compressDataUrl = (dataUrl: string): Promise<string> => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            try {
+                const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(img.width, img.height));
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(img.width * scale);
+                canvas.height = Math.round(img.height * scale);
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return resolve(dataUrl);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const compressed = canvas.toDataURL('image/jpeg', 0.85);
+                resolve(compressed.length < dataUrl.length ? compressed : dataUrl);
+            } catch {
+                resolve(dataUrl);
+            }
+        };
+        // Formati non decodificabili dal browser (es. HEIC): invia l'originale
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+    });
+};
+
+const toGenerativeParts = async (dataUrls: string[]) =>
+    Promise.all(dataUrls.map(async url => dataUrlToGenerativePart(await compressDataUrl(url))));
+
 const dataUrlToGenerativePart = (dataUrl: string) => {
     return {
         inlineData: {
@@ -188,7 +218,7 @@ export const HomePage: React.FC = () => {
       // Se è un duplicato e l'utente è loggato, mostra opzioni all'utente
       if (duplicateInfo.isDuplicate && duplicateInfo.existingItem && user) {
         // Per i duplicati, forza sempre una nuova valutazione per aggiornare i prezzi
-        const imageParts = imageUrls.map(url => dataUrlToGenerativePart(url));
+        const imageParts = await toGenerativeParts(imageUrls);
         const { appraisalData, sources, fromCache } = await getUniversalAppraisal(imageParts); // Rimuovi imageHash per forzare nuova chiamata
 
         // Aggiorna prezzo nell'inventario se diverso
@@ -221,7 +251,7 @@ export const HomePage: React.FC = () => {
       }
 
       // Processo normale per nuove immagini
-      const imageParts = imageUrls.map(url => dataUrlToGenerativePart(url));
+      const imageParts = await toGenerativeParts(imageUrls);
       const { appraisalData, sources, fromCache } = await getUniversalAppraisal(imageParts, imageHash);
 
       const newResult: AppraisalResult = {
